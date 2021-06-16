@@ -48,7 +48,7 @@ class block_sideblock extends block_base
         {
             if($user->timecompleted != null) //podmínka funguje, odstranily se prázdné řádky
             {
-                $userstring .= $user->firstname.' '.$user->lastname.' '.$user->timecompleted.'<br/>';
+                $userstring = $user->timecompleted.'<br/>'; //15:30 nefunguje už ani tohle!
             }
             else
             {
