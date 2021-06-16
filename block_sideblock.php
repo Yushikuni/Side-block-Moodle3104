@@ -15,32 +15,55 @@ class block_sideblock extends block_base
     }
     public function get_content() 
     {
+        global $DB;
+
         if ($this->content !== null) 
         {
           return $this->content;
         }
-     
+        /*
+            --------------------------------------------------------------------
+            1. Zajistit funkčnost bloku - hotovo
+            2. Co se tam má vypsat  a. Kdy byl kurz dokončen
+                                    b. Echo že nebyl kurz dokončen
+            ---------------------------------------------------------------------
+            1. Připojení k databázi
+            2. čtení z databáze
+            3. načtení toho co chci z databáze 
+                        -> chci time stamp
+                        -> chci jej zobrazit v čitelné podobě pro oko
+                        -> chci jej zobrazit pouze tam kde je kurz hotový
+            4. výpis do side bloku v moodle
+            ---------------------------------------------------------------------
+        */  
+       /* $userstring = "";
+        $users = $DB->get_records('user');
+        foreach($users as $user)
+        {
+            $userstring .= $user->firstname.' '.$user->lastname.'<br/>';
+        }*/
+        $userstring = "";
+        $userscomplete = $DB->get_records('course_completions');
+        foreach($userscomplete as $user)
+        {
+            if($user->timecompleted != null) //podmínka funguje, odstranily se prázdné řádky
+            {
+                $userstring .= $user->firstname.' '.$user->lastname.' '.$user->timecompleted.'<br/>';
+            }
+            else
+            {
+                $userstring = "Nesplněn";
+            }
+            
+        }
         $this->content         =  new stdClass;
-        $dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
+        //$textik = "text";
+        /*$dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
         $index = 0; 
-        $textik = "text";
+        
         foreach($dbh->query('SELECT `timecompleted` FROM `mdl_course_completions`WHERE `timecompleted` IS NOT NULL')as $timeStamp)
         {
-/*
---------------------------------------------------------------------
-1. Zajistit funkčnost bloku - hotovo
-2. Co se tam má vypsat  a. Kdy byl kurz dokončen
-                        b. Echo že nebyl kurz dokončen
----------------------------------------------------------------------
-1. Připojení k databázi
-2. čtení z databáze
-3. načtení toho co chci z databáze 
-            -> chci time stamp
-            -> chci jej zobrazit v čitelné podobě pro oko
-            -> chci jej zobrazit pouze tam kde je kurz hotový
-4. výpis do side bloku v moodle
----------------------------------------------------------------------
-*/          //1623232156 > 39600
+        //1623232156 > 39600
             /*if(date("Y/m/d",$timeStamp[$index]) != NULL) // date("Y/m/d",'39600')) // 1.1 1970 12:00
             {
                 $textik = "\nTime Stamp: ".date("Y/m/d",$timeStamp[$index]);
@@ -49,12 +72,12 @@ class block_sideblock extends block_base
             {
                 $textik = "Not complete";
             }
-             */
+                
             $textik = "\nTime Stamp: ".date("d.m Y",$timeStamp[$index]);//Y/m/d",$timeStamp[$index]);
             //$index++;
-        }
+        }*/
         
-        $this->content->text = $textik;
+        $this->content->text = $userstring;//$textik;
         $this->content->footer = 'Author: Květa';
      
         return $this->content;
