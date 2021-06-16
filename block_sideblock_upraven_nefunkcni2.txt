@@ -1,0 +1,243 @@
+<?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once("{$CFG->libdir}/completionlib.php");
+
+class block_sideblock extends block_base 
+{
+    /*public function my_function_making_use_of_database() 
+    {
+        global $DB;
+     
+        // You can access the database via the $DB method calls here.
+                //$dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
+                $index = 0; 
+                $textik = "text";
+
+                //nefunkční vyhledávání na celém moodle
+                foreach($DB->get_record_sql('SELECT `timecompleted` FROM `mdl_course_completions`WHERE `timecompleted` IS NOT NULL')as $timeStamp)
+                {
+        /*
+        --------------------------------------------------------------------
+        1. Zajistit funkčnost bloku - hotovo
+        2. Co se tam má vypsat  a. Kdy byl kurz dokončen
+                                b. Echo že nebyl kurz dokončen
+        ---------------------------------------------------------------------
+        1. Připojení k databázi
+        2. čtení z databáze
+        3. načtení toho co chci z databáze 
+                    -> chci time stamp
+                    -> chci jej zobrazit v čitelné podobě pro oko
+                    -> chci jej zobrazit pouze tam kde je kurz hotový
+        4. výpis do side bloku v moodle
+        ---------------------------------------------------------------------
+        */          //1623232156 > 39600
+                    /*if(date("Y/m/d",$timeStamp[$index]) > date("Y/m/d",'39600')) // 1.1 1970 12:00
+                    {
+                        $textik = "\nTime Stamp: ".date("Y/m/d",$timeStamp[$index]);
+                    }
+                    else
+                    {
+                        $textik = "Not complete";
+                    }
+                    $index++; 
+                }
+                return $textik;
+
+    }*/
+    public function init() 
+    {
+        $this->title = get_string('sideblock', 'block_sideblock');
+    }
+    //přepis completion status
+    public function applicable_formats()
+    {
+        return array('course' =>true);
+    }
+
+    // The PHP tag and the curly bracket for the class definition 
+    // will only be closed after there is another function added in the next section.
+    public function has_config()
+    {
+        return true;
+    }
+    public function get_content() 
+    {
+        global $user;
+
+        $rows = array();
+        $srows = array();
+        $prows = array();
+        //pokud je kontent různý od null
+        if ($this->content !== null) 
+        {
+          return $this->content;
+        }
+        
+        $course = $this->page->course;
+        $context = context_course::instace($course->id);
+        
+        //prázdný kontent
+        $this->content = new stdClass();
+        $this->content->text = "XXX";
+        $this->content->footer = "YYY";
+
+        //dá se editnout kurz?
+        $can_edit = has_capability('moodle/course:update',$context);
+
+        //Získej course completion data
+        $info = new completion_info($course);
+
+        //nezobrazuj pokud completion není zapnutý
+        if (!completion_info::is_enabled_for_site()) 
+        {
+            if ($can_edit) 
+            {
+                $this->content->text .= get_string('completionnotenabledforsite', 'completion');
+            }
+            return $this->content;
+
+        } else if (!$info->is_enabled())
+        {
+            if ($can_edit) 
+            {
+                $this->content->text .= get_string('completionnotenabledforcourse', 'completion');
+            }
+            return $this->content;
+        }
+        // Load criteria to display.
+        $completions = $info->get_completions($user->id);
+        // Check this user is enroled.
+        if ($info->is_tracked_user($user->id)) {
+
+            // Generate markup for criteria statuses.
+            $data = '';
+
+            // For aggregating activity completion.
+            $activities = array();
+            $activities_complete = 0;
+
+            // For aggregating course prerequisites.
+            $prerequisites = array();
+            $prerequisites_complete = 0;
+
+            // Flag to set if current completion data is inconsistent with what is stored in the database.
+            $pending_update = false;
+
+            // Loop through course criteria.
+            foreach ($completions as $completion) 
+            {
+                $complete = $completion->is_complete();
+
+                if (!$pending_update->is_pending($completion)) 
+                {
+                    $pending_update = true;
+                }
+            }
+            $row = new html_table_row();
+            $row->cells[1] = new html_table_cell($completion->get_status());
+            $row->cells[1]->style = 'text-align: right;';
+            $srows[] = $row;
+
+            // Display completion status.
+            $table = new html_table();
+            $table->width = '100%';
+            $table->attributes = array('style'=>'font-size: 90%;', 'class'=>'');
+            
+            $row = new html_table_row();
+            $content = html_writer::tag('strong', get_string('status').': ');
+            
+            // Is course complete?
+            $coursecomplete = $info->is_course_complete($user->id);
+            // Load course completion.
+            $params = array(
+                            'userid' => $user->id,
+                            'course' => $course->id
+            );
+            $ccompletion = new completion_completion($params);
+            
+            // Array merge $rows and $data here.
+            $rows = array_merge($rows, $srows);
+            $table->data = $rows;
+            $this->content->text .= html_writer::table($table);
+        }
+        /*$this->content          =  new stdClass;
+        $this->content->text;*/
+        $this->content->footer  = 'Author: Květa';
+     
+        return $this->content;
+    }
+    public function specialization() 
+    {
+        if (isset($this->config)) 
+        {
+            if (empty($this->config->title)) 
+            {                                              //$this->title
+                                                        //$this->config->title
+                                                        //'defaulttitle'
+                $this->title  = $this->title = get_string('Side Block', 'block_sideblock');            
+            } 
+            else 
+            {
+                $this->title = $this->config->title;
+            }
+     
+            if (empty($this->config->text)) 
+            {
+                $this->config->text = get_string('-', 'block_sideblock');
+            }    
+        }
+    }
+    public function instance_allow_multiple()
+    {
+        return true;
+    }
+    /**
+     * Return the plugin config settings for external functions.
+     *
+     * @return stdClass the configs for both the block instance and plugin
+     * @since Moodle 3.8
+     */
+    public function get_config_for_external() 
+    {
+        global $CFG;
+
+        // Return all settings for all users since it is safe (no private keys, etc..).
+        $instanceconfigs = !empty($this->config) ? $this->config : new stdClass();
+        $pluginconfigs = (object) ['allowcssclasses' => $CFG->block_sideblock_allowcssclasses];
+
+        return (object) [
+            'instance' => $instanceconfigs,
+            'plugin' => $pluginconfigs,
+        ];
+    }
+    public function instance_config_save($data,$nolongerused =false) 
+    {
+        if(get_config('sideblock', 'Allow_HTML') == '1') 
+        {
+          $data->text = strip_tags($data->text);
+        }
+       
+        // And now forward to the default implementation defined in the parent class
+        return parent::instance_config_save($data,$nolongerused);
+    }
+    /*public function hide_header() 
+    {
+        return true;
+    }*/
+    public function html_attributes() {
+        $attributes = parent::html_attributes(); // Get default values
+        $attributes['class'] .= ' block_'. $this->name(); // Append our class to class attribute
+        return $attributes;
+    }
+    public function applicable_formats() 
+    {
+        return array(
+                        'course-view' => true, 
+                        'course-view-social' => false,
+                        'site-index' => true,
+                        'mod' => true, 
+                        'mod-quiz' => false
+                    );
+    }
+}
