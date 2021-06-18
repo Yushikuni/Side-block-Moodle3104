@@ -1,4 +1,29 @@
 <?php
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Strings for component 'block_html', language 'en', branch 'MOODLE_20_STABLE'
+ *
+ * @package   block_sideblock
+ * @copyright 2021 Husakova Kvetuse
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+
 defined('MOODLE_INTERNAL') || die();
 
 class block_sideblock extends block_base 
@@ -15,7 +40,7 @@ class block_sideblock extends block_base
     }
     public function get_content() 
     {
-        global $DB;
+        global $DB, $USER, $COURSE;
 
         if ($this->content !== null) 
         {
@@ -36,26 +61,42 @@ class block_sideblock extends block_base
             4. výpis do side bloku v moodle
             ---------------------------------------------------------------------
         */  
-       /* $userstring = "";
+        /*$userstring = "";
         $users = $DB->get_records('user');
         foreach($users as $user)
         {
             $userstring .= $user->firstname.' '.$user->lastname.'<br/>';
         }*/
-        $userstring = "";
-        $userscomplete = $DB->get_records('course_completions');
-        foreach($userscomplete as $user)
+
+        //$USER->id;
+        //$COURSE->id; //optional_param('course',null,PARAM_INT);//$PAGE->course->id;
+                                        //Potřebuju z tabulky completition id kurzu a id uživtele
+        $userscomplete = $DB->get_record('course_completions', ['userid' => $USER->id, 'course' => $COURSE->id] );
+        //,['userid'=>'2']);//'course');//'userid');    
+        $content = "";
+
+        if($userscomplete->timecompleted != null)
+        {                                               //'done'.date("Y/m/d h:m:s", $userscomplete->timecompleted)
+            $content = get_string('done','sideblock',$userscomplete->timecompleted);// => "Y/m/d h:m:s", $userscomplete->timecompleted);
+            //bude jeden identifikátor
+        }
+        else
         {
-            if($user->timecompleted != null) //podmínka funguje, odstranily se prázdné řádky
+            //bude druhej identifikátor
+            $content = get_string('undone','sideblock');
+        }
+        //$content = get_string('Identifikátor řetězce','jméno pluginu', Datum(common));
+        /*foreach($userscomplete as $user)
+        {
+            if($user->timecompleted != null)
             {
-                $userstring .= $user->firstname.' '.$user->lastname.' '.$user->timecompleted.'<br/>';
+                $content .= "Dokončen: ".date("Y/m/d h:m:s", $user->timecompleted).'<br/>';//vrátí už i datum
             }
             else
             {
-                $userstring = "Nesplněn";
-            }
-            
-        }
+                $content .= "Nesplněn".'<br/>';
+            } 
+        }*/
         $this->content         =  new stdClass;
         //$textik = "text";
         /*$dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
@@ -70,18 +111,19 @@ class block_sideblock extends block_base
             }
             else
             {
-                $textik = "Not complete";
+                $textik = "Nesplněn";
             }
                 
             $textik = "\nTime Stamp: ".date("d.m Y",$timeStamp[$index]);//Y/m/d",$timeStamp[$index]);
             //$index++;
         }*/
         
-        $this->content->text = $userstring;//$textik;
+        $this->content->text = $content;//$textik;
         $this->content->footer = 'Author: Květa';
      
         return $this->content;
     }
+    /*
     public function specialization() 
     {
         if (isset($this->config)) 
@@ -103,6 +145,8 @@ class block_sideblock extends block_base
             }    
         }
     }
+    */
+
     public function instance_allow_multiple()
     {
         return true;
