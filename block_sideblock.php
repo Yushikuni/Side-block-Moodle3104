@@ -15,7 +15,7 @@ class block_sideblock extends block_base
     }
     public function get_content() 
     {
-        global $DB;
+        global $DB, $USER, $COURSE;
 
         if ($this->content !== null) 
         {
@@ -36,26 +36,44 @@ class block_sideblock extends block_base
             4. výpis do side bloku v moodle
             ---------------------------------------------------------------------
         */  
-       /* $userstring = "";
+        /*$userstring = "";
         $users = $DB->get_records('user');
         foreach($users as $user)
         {
             $userstring .= $user->firstname.' '.$user->lastname.'<br/>';
         }*/
-        $userstring = "";
-        $userscomplete = $DB->get_records('course_completions');
-        foreach($userscomplete as $user)
+
+        //$USER->id;
+        //$COURSE->id; //optional_param('course',null,PARAM_INT);//$PAGE->course->id;
+                                        //Potřebuju z tabulky completition id kurzu a id uživtele
+        $userscomplete = $DB->get_record('course_completions', ['userid' => $USER->id, 'course' => $COURSE->id] );
+        //,['userid'=>'2']);//'course');//'userid');    
+
+        //řádek 53 neber v potaz, vše půjde přes get_string() metodu
+        $content = "Zobrazení ID uživatele: ".$USER->id.'<br/>'."Zobrazení ID kurzu: ".$COURSE->id.'<br/>'."Kurz: ";
+
+        if($userscomplete->timecompleted != null)
         {
-            if($user->timecompleted != null) //podmínka funguje, odstranily se prázdné řádky
+            $content .= "dokončen: ".date("Y/m/d h:m:s", $userscomplete->timecompleted).'<br/>';
+            //bude jeden identifikátor
+        }
+        else
+        {
+            //bude druhej identifikátor
+            $content .= "nesplněn".'<br/>';
+        }
+        //$content = get_string('Identifikátor řetězce','jméno pluginu', Datum(common));
+        /*foreach($userscomplete as $user)
+        {
+            if($user->timecompleted != null)
             {
-                $userstring = $user->timecompleted.'<br/>'; //15:30 nefunguje už ani tohle!
+                $content .= "Dokončen: ".date("Y/m/d h:m:s", $user->timecompleted).'<br/>';//vrátí už i datum
             }
             else
             {
-                $userstring = "Nesplněn";
-            }
-            
-        }
+                $content .= "Nesplněn".'<br/>';
+            } 
+        }*/
         $this->content         =  new stdClass;
         //$textik = "text";
         /*$dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
@@ -70,18 +88,19 @@ class block_sideblock extends block_base
             }
             else
             {
-                $textik = "Not complete";
+                $textik = "Nesplněn";
             }
                 
             $textik = "\nTime Stamp: ".date("d.m Y",$timeStamp[$index]);//Y/m/d",$timeStamp[$index]);
             //$index++;
         }*/
         
-        $this->content->text = $userstring;//$textik;
+        $this->content->text = $content;//$textik;
         $this->content->footer = 'Author: Květa';
      
         return $this->content;
     }
+    /*
     public function specialization() 
     {
         if (isset($this->config)) 
@@ -103,6 +122,8 @@ class block_sideblock extends block_base
             }    
         }
     }
+    */
+
     public function instance_allow_multiple()
     {
         return true;
