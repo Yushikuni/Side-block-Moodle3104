@@ -48,19 +48,17 @@ class block_sideblock extends block_base
                                         //Potřebuju z tabulky completition id kurzu a id uživtele
         $userscomplete = $DB->get_record('course_completions', ['userid' => $USER->id, 'course' => $COURSE->id] );
         //,['userid'=>'2']);//'course');//'userid');    
-
-        //řádek 53 neber v potaz, vše půjde přes get_string() metodu
-        $content = "Zobrazení ID uživatele: ".$USER->id.'<br/>'."Zobrazení ID kurzu: ".$COURSE->id.'<br/>'."Kurz: ";
+        $content = "";
 
         if($userscomplete->timecompleted != null)
-        {
-            $content .= "dokončen: ".date("Y/m/d h:m:s", $userscomplete->timecompleted).'<br/>';
+        {                                               //'done'.date("Y/m/d h:m:s", $userscomplete->timecompleted)
+            $content .= get_string('done','sideblock',$userscomplete->timecompleted);// => "Y/m/d h:m:s", $userscomplete->timecompleted);
             //bude jeden identifikátor
         }
         else
         {
             //bude druhej identifikátor
-            $content .= "nesplněn".'<br/>';
+            $content .= get_string('undone','sideblock');
         }
         //$content = get_string('Identifikátor řetězce','jméno pluginu', Datum(common));
         /*foreach($userscomplete as $user)
