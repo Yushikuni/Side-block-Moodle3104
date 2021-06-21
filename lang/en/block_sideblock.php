@@ -16,21 +16,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_html', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'block_sideblock', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package   block_sideblock
  * @copyright 2021 Husakova Kvetuse
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+    $string['author'] = 'Author: ';
+    $string['authorname'] = 'Květa';
+    $string['descallowhtml'] = 'descallowhtml';
+    $string['descconfig'] = 'descconfig';
+    $string['done'] = 'finished: {$a}';
+    $string['headerconfig'] = 'headerconfig';
+    $string['infocourse'] = 'Course ';
+    $string['labelallowhtml'] = 'labelallowhtml';
+    $string['pluginname'] = 'Side Block *.*';
+    $string['sideblock'] = 'Side Block';
+    $string['simplehtml'] = 'Simple HTML Side Block';
+    $string['simplehtml:addinstance'] = 'Add a new simple HTML Side Block';
+    $string['simplehtml:myaddinstance'] = 'Add a new Side Block HTML block to the My Moodle page';
+    $string['undone'] = 'unfinished';
 
-$string['done'] = 'Finished: {$a}';
-$string['undone'] = "Unfinished";
-$string['pluginname'] = 'Simple HTML side block';
-$string['simplehtml'] = 'Simple HTML side block';
-$string['simplehtml:addinstance'] = 'Add a new simple HTML side block';
-$string['simplehtml:myaddinstance'] = 'Add a new simple side HTML block to the My Moodle page';
-$string['headerconfig'] = 'headerconfig';
-$string['descallowhtml'] = 'descallowhtml';
-$string['labelallowhtml'] = 'labelallowhtml';
-$string['descconfig'] = 'descconfig';
-$string['sideblock'] = 'Side Block';
+
+
+
+

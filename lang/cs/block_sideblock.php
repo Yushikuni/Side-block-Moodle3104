@@ -22,8 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['done'] = "Dokončen: {$a}";
-$string['undone'] = "Nedokončen";
+$string['done'] = 'dokončen: {$a}';
+$string['undone'] = 'nedokončen';
 $string['pluginname'] = 'Jednoduchý HTML postranní blok';
 $string['simplehtml'] = 'Jednoduchý HTML postranní blok';
 $string['simplehtml:addinstance'] = 'Přidat nový jednoduchý HTML postranní blok';
@@ -33,3 +33,6 @@ $string['descallowhtml'] = 'descallowhtml';
 $string['labelallowhtml'] = 'labelallowhtml';
 $string['descconfig'] = 'descconfig';
 $string['sideblock'] = 'Postranní blok';
+$string['infocourse'] = 'Kurz ';
+$string['author'] = 'Autor: ';
+$string['authorname'] = 'Květa';

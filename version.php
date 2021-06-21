@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_html', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'block_sideblock', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package   block_sideblock
  * @copyright 2021 Husakova Kvetuse
