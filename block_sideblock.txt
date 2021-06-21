@@ -61,19 +61,64 @@ class block_sideblock extends block_base
             4. výpis do side bloku v moodle
             ---------------------------------------------------------------------
         */  
+        /*$userstring = "";
+        $users = $DB->get_records('user');
+        foreach($users as $user)
+        {
+            $userstring .= $user->firstname.' '.$user->lastname.'<br/>';
+        }*/
+
+        //$USER->id;
+        //$COURSE->id; //optional_param('course',null,PARAM_INT);//$PAGE->course->id;
+                                        //Potřebuju z tabulky completition id kurzu a id uživtele
         $userscomplete = $DB->get_record('course_completions', ['userid' => $USER->id, 'course' => $COURSE->id] );
+        //,['userid'=>'2']);//'course');//'userid');    
         $content = get_string('infocourse', 'block_sideblock');
 
         if($userscomplete->timecompleted != null)
-        {                        
-            $content .= get_string('done','block_sideblock',date("d. m Y h:m:s",$userscomplete->timecompleted));
+        {                         //tady to crashne(na 'done' i kdyz ja je tam mam nadefinovany :|) //'done'.date("Y/m/d h:m:s", $userscomplete->timecompleted)
+            $content .= get_string('done','block_sideblock',date("d. m Y h:m:s",$userscomplete->timecompleted));// => "Y/m/d h:m:s", $userscomplete->timecompleted);
+            //bude jeden identifikátor
+            //$content .= "Dokončen: ".date("Y/m/d h:m:s", $userscomplete->timecompleted).'<br/>';//vrátí už i datum
         }
         else
         {
+            //bude druhej identifikátor
             $content .= get_string('undone','block_sideblock');
+            //$content .= "Nesplněn".'<br/>';
         }
-
+        //$content = get_string('Identifikátor řetězce','jméno pluginu', Datum(common));
+        /*foreach($userscomplete as $user)
+        {
+            if($user->timecompleted != null)
+            {
+                $content .= "Dokončen: ".date("Y/m/d h:m:s", $user->timecompleted).'<br/>';//vrátí už i datum
+            }
+            else
+            {
+                $content .= "Nesplněn".'<br/>';
+            } 
+        }*/
         $this->content         =  new stdClass;
+        //$textik = "text";
+        /*$dbh = new PDO('mysql:host=localhost;dbname=moodle','root', '');//vyřešit jinak
+        $index = 0; 
+        
+        foreach($dbh->query('SELECT `timecompleted` FROM `mdl_course_completions`WHERE `timecompleted` IS NOT NULL')as $timeStamp)
+        {
+        //1623232156 > 39600
+            /*if(date("Y/m/d",$timeStamp[$index]) != NULL) // date("Y/m/d",'39600')) // 1.1 1970 12:00
+            {
+                $textik = "\nTime Stamp: ".date("Y/m/d",$timeStamp[$index]);
+            }
+            else
+            {
+                $textik = "Nesplněn";
+            }
+                
+            $textik = "\nTime Stamp: ".date("d.m Y",$timeStamp[$index]);//Y/m/d",$timeStamp[$index]);
+            //$index++;
+        }*/
         $footerContent = get_string('author','block_sideblock');
         $footerContent .=get_string('authorname','block_sideblock');
         $this->content->text = $content;//$textik;
@@ -81,6 +126,30 @@ class block_sideblock extends block_base
      
         return $this->content;
     }
+    /*
+    public function specialization() 
+    {
+        if (isset($this->config)) 
+        {
+            if (empty($this->config->title)) 
+            {                                              //$this->title
+                                                        //$this->config->title
+                                                        //'defaulttitle'
+                $this->title  = $this->title = get_string('Side Block', 'block_sideblock');            
+            } 
+            else 
+            {
+                $this->title = $this->config->title;
+            }
+     
+            if (empty($this->config->text)) 
+            {
+                $this->config->text = get_string('-', 'block_sideblock');
+            }    
+        }
+    }
+    */
+
     public function instance_allow_multiple()
     {
         return true;
